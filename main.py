@@ -2,6 +2,23 @@ from fastapi import FastAPI,HTTPException, Path
 from typing import Optional
 from pydantic import BaseModel
 
+from typing import List
+from fastapi import Depends, FastAPI, HTTPException
+from sqlalchemy.orm import Session
+from . import crud, models, schemas
+from .database import SessionLocal, engine
+
+models.Base.metadata.create_all(bind=engine)
+
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+"""
 class Disciplina(BaseModel):
     nome: str
     professor: Optional[str] = None
@@ -16,7 +33,7 @@ ex_n = Nota(materia="Megadados",nota=10.0)
 
 disciplinas = [ex_d]
 notas = [ex_n]
-
+"""
 
 app = FastAPI()
 
@@ -24,17 +41,23 @@ app = FastAPI()
 async def Home():
     return {"Mensagem":"Bem vindo!"}
 
+
 @app.get("/disciplinas")
-async def getDisciplinas():
-    return disciplinas
+async def getDisciplinas(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
+    disciplinas = crud.get_disciplinas(db, skip=skip, limit=limit)
+    if disciplinas is None:
+        return {"Resposta": "Não há disciplinas"}
+    else:
+        return disciplinas
+    
 
 @app.get("/disciplinas/{nome}")
-async def getDisciplinaByName(nome: str = Path(None, title="Nome", description="Nome da disciplina")):
-    for disciplina in disciplinas:
-        if disciplina.nome == nome:
-            return disciplina
+async def getDisciplinaByName(nomeQ: str, db: Session = Depends(get_db)):
+    
+    disciplinas = crud.get_disciplina_por_nome(db, nome = nomeQ)
     raise HTTPException(status_code = 404, detail = "'nome' not found")
-
+    return disciplinas
+    
 @app.post("/disciplinas")
 async def createDisciplinas(item: Disciplina ):
     for disciplina in  disciplinas:
