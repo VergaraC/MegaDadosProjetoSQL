@@ -28,6 +28,6 @@ class Nota(Base):
     
     id_disciplina= Column(String(80), ForeignKey("disciplinas.id"),nullable=False)
     id_disciplina = relationship(Disciplina, primaryjoin=id_disciplina == Disciplina.id)
-    nome= Column(String(80), ForeignKey("disciplinas.nome"),nullable=False)
+    nome_disciplina= Column(String(80), ForeignKey("disciplinas.nome"),nullable=False)
    
     nota = Column(Float)
