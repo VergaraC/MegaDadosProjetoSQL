@@ -66,7 +66,7 @@ async def createDisciplinas(item: schemas.DisciplinaCreate, db: Session = Depend
     return crud.create_disciplina(db, disciplinas = item)
 
 @app.delete("/disciplinas/{nome}")
-async def delDisciplina(nome: schemas.DisciplinaDelete,db: Session = Depends(get_db)):
+async def delDisciplina(nome: str,db: Session = Depends(get_db)):
     try:
         return crud.delete_disciplinas(nome, db)
     except IOError as e:
@@ -121,7 +121,7 @@ async def getNotas(db: Session = Depends(get_db), skip: int = 0, limit: int = 10
 
 
 @app.put("/notas/{id}")
-async def updateNota(db: Session, id: int, notaNow: models.Nota):
+async def updateNota(id: int, notaNow: schemas.NotaUpdate, db: Session = Depends(get_db)):
     try:
         return crud.update_nota(db, id, notaNow)
     except IOError as e:

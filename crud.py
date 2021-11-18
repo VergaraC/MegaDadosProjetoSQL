@@ -53,7 +53,7 @@ def create_nota(db: Session, nota: schemas.NotaCreate, id: int):
 
 
 
-def update_nota(db: Session, id: int, notaNow: models.Nota):
+def update_nota(db: Session, id: int, notaNow: schemas.NotaUpdate):
     db.query(models.Nota).filter(models.Nota.id == id).update({models.Nota.id_disciplina: notaNow.id_disciplina, models.Nota.nome_disciplina: notaNow.nome_disciplina, models.Nota.nota: notaNow.nota})
     db.commit()
     return notaNow
