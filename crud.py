@@ -22,14 +22,15 @@ def create_disciplina(db: Session, disciplina: schemas.DisciplinaCreate):
 
     return db_disciplina
 
-def update_disciplinas(db: Session, id: int, disciplina: models.Disciplina):
-    db.query(models.Disciplina).filter(models.Disciplina.id == id).update({models.Disciplina.nome: disciplina.nome, models.Disciplina.professor: disciplina.professor, models.Disciplina.comentario: disciplina.comentario})
+def update_disciplinas(db: Session, nome: str, disciplina: models.Disciplina):
+    db.query(models.Disciplina).filter(models.Disciplina.nome == nome).update({models.Disciplina.nome: disciplina.nome, models.Disciplina.professor: disciplina.professor, models.Disciplina.comentario: disciplina.comentario})
     db.commit()
     return disciplina
 
-def delete_disciplinas(db: Session, id: int ):
-    db.query(models.Disciplina).filter(models.Disciplina.id == id).delete()
+def delete_disciplinas(db: Session, nome: str ):
+    db.query(models.Disciplina).filter(models.Disciplina.nome == nome).delete()
     db.commit()
+    # return f"{nome} foi removida"
 
 ##########################################################################################
 
@@ -60,3 +61,4 @@ def update_nota(db: Session, id: int, notaNow: models.Nota):
 def delete_nota(db: Session, id:int):
     db.query(models.Nota).filter(models.Nota.id == id).delete()
     db.commit()
+    # return f"{id} foi removida"

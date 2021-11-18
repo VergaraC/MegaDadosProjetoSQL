@@ -44,52 +44,51 @@ async def Home():
 
 @app.get("/disciplinas")
 async def getDisciplinas(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
-    disciplinas = crud.get_disciplinas(db, skip=skip, limit=limit)
-    if disciplinas is None:
+    try:
+        return crud.get_disciplinas(db, skip=skip, limit=limit)
+    except IOError as e:
         return {"Resposta": "Não há disciplinas"}
-    else:
-        return disciplinas
     
 
 @app.get("/disciplinas/{nome}")
 async def getDisciplinaByName(nomeQ: str, db: Session = Depends(get_db)):
-    
-    disciplinas = crud.get_disciplina_por_nome(db, nome = nomeQ)
-    raise HTTPException(status_code = 404, detail = "'nome' not found")
-    return disciplinas
-    
+    try:
+        return crud.get_disciplina_por_nome(db, nome = nomeQ)
+    except IOError as e:
+        raise HTTPException(status_code = 404, detail = "'nome' not found")
+
 @app.post("/disciplinas")
-async def createDisciplinas(item: Disciplina ):
-    for disciplina in  disciplinas:
-        if disciplina.nome == item.nome:
-            raise HTTPException(status_code = 400, detail = "'nome' already in use")
-    disciplinas.append(item)
-    return item
+async def createDisciplinas(item: schemas.DisciplinaCreate, db: Session = Depends(get_db)):
+    nomes = crud.get_nomes_disciplina(db)
+    if item.nome in nomes:
+        raise HTTPException(status_code = 400, detail = "'nome' already in use")
+    return crud.create_disciplina(db, disciplinas = item)
 
 @app.delete("/disciplinas/{nome}")
-async def delDisciplina(nome: str = Path(None, title="Nome", description="Nome da disciplina")):
-    for disciplina in disciplinas:
-        if disciplina.nome == nome:
-            disciplinas.pop(disciplinas.index(disciplina))
-            return {"Success":"Disciplina deleted"}
+async def delDisciplina(nome: schemas.DisciplinaDelete,db: Session = Depends(get_db)):
+    nomes = crud.get_nomes_disciplina(db)
+    if nome in nomes:
+        crud.delete_disciplinas(db, nome)
+        return {"Success":"Disciplina deleted"}
     raise HTTPException(status_code = 404, detail = "'nome' not found")
 
 @app.get("/disciplinas/get-nomes/")
-async def getListaDisciplinas():
-    list_disciplinas_nomes = []
-    for disciplina in disciplinas:
-        list_disciplinas_nomes.append(disciplina.nome)
-    return list_disciplinas_nomes
+async def getListaDisciplinas(db: Session = Depends(get_db)):
+    # list_disciplinas_nomes = []
+    # for disciplina in disciplinas:
+    #     list_disciplinas_nomes.append(disciplina.nome)
+    # return list_disciplinas_nomes
+    try:
+        return crud.get_nomes_disciplina(db)
+    except IOError as e:
+        return {"Resposta": "Não há disciplinas"}
 
 @app.put("/disciplinas/{nome}")
-async def updateDisciplina(nome: str , item: Disciplina):
-    idx = 0
-    for disciplina in disciplinas:
-        if disciplina.nome == nome:
-            disciplinas[idx] = item
-            return  disciplinas[idx]
-        idx += 1
-    raise HTTPException(status_code = 404, detail = "'nome' not found")
+async def updateDisciplina(nome: str , item: schemas.DisciplinaUpdate, db: Session = Depends(get_db)):
+    try:
+        return crud.update_disciplinas(db,nome,item)
+    except IOError as e:
+        return {"Resposta": "Não há disciplinas"}
 
 #########################################################################
 ############################   Funções  ################################# 
