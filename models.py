@@ -2,9 +2,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import Float
 
-from main import Disciplina
-
-from .database import Base
+from database import Base
 
 
 class Disciplina(Base):
