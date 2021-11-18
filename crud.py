@@ -41,13 +41,11 @@ def get_notas(db: Session, skip: int = 0, limit: int = 100):
 
 def create_nota(db: Session, nota: schemas.NotaCreate, id: int):
 
-    db_nota = models.Nota(**nota.dict(), id_disciplina=id)
 
+    db_nota = models.Nota(id = nota.id, nome_disciplina = nota.nome_disciplina, nota = nota.nota)
     db.add(db_nota)
 
     db.commit()
-
-    db.refresh(db_nota)
 
     return db_nota
 

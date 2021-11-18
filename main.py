@@ -97,7 +97,7 @@ async def updateDisciplina(nome: str , item: schemas.DisciplinaUpdate, db: Sessi
 @app.post("/notas")
 async def createNotas(nota: schemas.NotaCreate, db: Session = Depends(get_db),  id: int = 0):
     valores = crud.get_notas(db)
-    if nota.valor in valores:
+    if nota.nome_disciplina in valores:
         raise HTTPException(status_code = 400, detail = "'nota' already in use")
     return crud.create_nota(db, nota = nota,id = id)
 
