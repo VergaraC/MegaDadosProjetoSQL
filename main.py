@@ -66,12 +66,12 @@ async def createDisciplinas(item: schemas.DisciplinaCreate, db: Session = Depend
 
 @app.delete("/disciplinas/{nome}")
 async def delDisciplina(nome: schemas.DisciplinaDelete,db: Session = Depends(get_db)):
-    nomes = crud.get_nomes_disciplina(db)
-    if nome in nomes:
-        crud.delete_disciplinas(db, nome)
-        return {"Success":"Disciplina deleted"}
-    raise HTTPException(status_code = 404, detail = "'nome' not found")
-
+    try:
+        return crud.delete_disciplinas(nome, db)
+    except IOError as e:
+        return {"Resposta": "Não foi possível deletar"}
+    
+    
 @app.get("/disciplinas/get-nomes/")
 async def getListaDisciplinas(db: Session = Depends(get_db)):
     # list_disciplinas_nomes = []
@@ -90,44 +90,54 @@ async def updateDisciplina(nome: str , item: schemas.DisciplinaUpdate, db: Sessi
     except IOError as e:
         return {"Resposta": "Não há disciplinas"}
 
+
 #########################################################################
-############################   Funções  ################################# 
-
-def getLastId(notas):
-    if notas:
-        ultima_nota = notas[-1]
-        return ultima_nota["id"]
-    return 0
-
+#########################################################################
+############################   NOTA  #################################### 
 #########################################################################
 #########################################################################
 
 @app.post("/notas")
-async def createNotas(item: Nota):   
-    for d in disciplinas:
-        if d.nome == item.materia:
-            new = item.dict()
-            ultimo_id = getLastId(notas)
-            new["id"] = ultimo_id+1
-            notas.append(new)
-            return new
-    raise HTTPException(status_code = 404, detail = "'disciplina' not found")
+async def createNotas(nota: schemas.NotaCreate, db: Session = Depends(get_db),  id: int = 0):
+    valores = crud.get_notas(db)
+    if nota.valor in valores:
+        raise HTTPException(status_code = 400, detail = "'nota' already in use")
+    return crud.create_nota(db, nota = nota,id = id)
+
+
+    '''try:
+        return crud.create_nota(nota, db, id)
+    except IOError as e:
+        return {"Resposta": "Não foi possível criar nota"}'''
+
 
 @app.delete("/notas/{id}")
-async def delNota(id: int = Path(None, title="Id", description="Id Nota")):
-    for nota in notas:
-        if nota["id"] == id:
-            notas.pop(notas.index(nota))
-            return {"message":"nota has been deleted"}
-    raise HTTPException(status_code = 404, detail = "'nota id' not found")
+async def delNota(db: Session = Depends(get_db), id: int = 0):
+    try:
+        return crud.delete_nota(db, id = id)
+    except IOError as e:
+        return {"Resposta": "Não foi possível deletar"}
+
+
 
 @app.get("/notas")
-async def getNotas():
-    return notas
+async def getNotas(db: Session = Depends(get_db), skip: int = 0, limit: int = 100):
+    try:
+        return crud.get_notas(db, skip=skip, limit=limit)
+    except IOError as e:
+        return {"Resposta": "Não há notas"}
+
 
 @app.put("/notas/{id}")
-async def updateNota(item: Nota, id: int):
-    idx = 0
+async def updateNota(db: Session, id: int, notaNow: models.Nota):
+    try:
+        return crud.update_nota(db, id, notaNow)
+    except IOError as e:
+        return {"Resposta": "Não há notas"}
+    
+    
+    
+    '''idx = 0
     for nota in notas:
         if nota["id"] == id:
             for d in disciplinas:
@@ -139,3 +149,4 @@ async def updateNota(item: Nota, id: int):
             raise HTTPException(status_code = 404, detail="'disciplina' not found")
         idx += 1
     raise HTTPException(status_code = 404, detail = "'nota id' not found")
+'''
