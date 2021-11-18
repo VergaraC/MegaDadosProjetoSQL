@@ -20,5 +20,4 @@ class Nota(Base):
     id = Column(Integer, primary_key=True, index=True)
     
     nome_disciplina= Column(String(45), ForeignKey("disciplinas.nome"),nullable=False)
-    nome_disciplina = relationship(Disciplina, primaryjoin=nome_disciplina == Disciplina.nome)
     nota = Column(Float, nullable=False)

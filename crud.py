@@ -12,7 +12,7 @@ def get_disciplinas(db: Session, skip: int = 0, limit: int = 100):
 
 def create_disciplina(db: Session, disciplina: schemas.DisciplinaCreate):
 
-    db_disciplina = models.Disciplina(**disciplina.dict())
+    db_disciplina = models.Disciplina(nome = disciplina.nome, professor = disciplina.professor, comentario = disciplina.comentario)
 
     db.add(db_disciplina)
 

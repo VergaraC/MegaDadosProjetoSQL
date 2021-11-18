@@ -63,12 +63,12 @@ async def createDisciplinas(item: schemas.DisciplinaCreate, db: Session = Depend
     nomes = crud.get_nomes_disciplina(db)
     if item.nome in nomes:
         raise HTTPException(status_code = 400, detail = "'nome' already in use")
-    return crud.create_disciplina(db, disciplinas = item)
+    return crud.create_disciplina(db, disciplina = item)
 
 @app.delete("/disciplinas/{nome}")
 async def delDisciplina(nome: str,db: Session = Depends(get_db)):
     try:
-        return crud.delete_disciplinas(nome, db)
+        return crud.delete_disciplinas(db, nome)
     except IOError as e:
         return {"Resposta": "Não foi possível deletar"}
     
