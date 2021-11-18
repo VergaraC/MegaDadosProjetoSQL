@@ -75,10 +75,6 @@ async def delDisciplina(nome: schemas.DisciplinaDelete,db: Session = Depends(get
     
 @app.get("/disciplinas/get-nomes/")
 async def getListaDisciplinas(db: Session = Depends(get_db)):
-    # list_disciplinas_nomes = []
-    # for disciplina in disciplinas:
-    #     list_disciplinas_nomes.append(disciplina.nome)
-    # return list_disciplinas_nomes
     try:
         return crud.get_nomes_disciplina(db)
     except IOError as e:
@@ -106,11 +102,6 @@ async def createNotas(nota: schemas.NotaCreate, db: Session = Depends(get_db),  
     return crud.create_nota(db, nota = nota,id = id)
 
 
-    '''try:
-        return crud.create_nota(nota, db, id)
-    except IOError as e:
-        return {"Resposta": "Não foi possível criar nota"}'''
-
 
 @app.delete("/notas/{id}")
 async def delNota(db: Session = Depends(get_db), id: int = 0):
@@ -136,18 +127,3 @@ async def updateNota(db: Session, id: int, notaNow: models.Nota):
     except IOError as e:
         return {"Resposta": "Não há notas"}
     
-    
-    
-    '''idx = 0
-    for nota in notas:
-        if nota["id"] == id:
-            for d in disciplinas:
-                if d.nome == item.materia:
-                    update = item.dict()
-                    update["id"] = id
-                    notas[idx] = update
-                    return notas[idx]
-            raise HTTPException(status_code = 404, detail="'disciplina' not found")
-        idx += 1
-    raise HTTPException(status_code = 404, detail = "'nota id' not found")
-'''

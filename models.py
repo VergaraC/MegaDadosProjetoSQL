@@ -8,11 +8,9 @@ from database import Base
 class Disciplina(Base):
     __tablename__ = "disciplinas"
 
-
-    id = Column(Integer, primary_key=True, index=True)
-    nome = Column(String, nullable=False)
-    professor = Column(String, nullable=True)
-    comentario = Column(String, nullable=False)
+    nome = Column(String(45),primary_key=True, nullable=False)
+    professor = Column(String(45), nullable=True)
+    comentario = Column(String(45), nullable=False)
 
 
 class Nota(Base):
@@ -21,8 +19,6 @@ class Nota(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     
-    id_disciplina= Column(Integer, ForeignKey("disciplinas.id"),nullable=False)
-    id_disciplina = relationship(Disciplina, primaryjoin=id_disciplina == Disciplina.id)
-    nome_disciplina= Column(String, ForeignKey("disciplinas.nome"),nullable=False)
-   
+    nome_disciplina= Column(String(45), ForeignKey("disciplinas.nome"),nullable=False)
+    nome_disciplina = relationship(Disciplina, primaryjoin=nome_disciplina == Disciplina.nome)
     nota = Column(Float, nullable=False)
